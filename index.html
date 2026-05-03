@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>WOLF LABS | The Weekend Rewind (A1)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Fonts: Quicksand (Friendly/Titles) & Nunito (Easy Reading) -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Quicksand:wght@500;700;900&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* === SCRAPBOOK THEME VARIABLES === */
+        :root {
+            --bg-paper: #F0EAE1;       /* Darker warm beige paper for better contrast */
+            --polaroid-white: #FFFFFF;
+            --accent-orange: #FF5A5F;  /* Action/Verbs */
+            --accent-blue: #087E8B;    /* Magic Word DID */
+            --accent-yellow: #F7C548;  /* Highlights/Praise */
+            --text-dark: #2D3142;      /* Deep navy for text */
+            --text-muted: #9095A5;
+        }
+
+        body { 
+            font-family: 'Nunito', sans-serif; 
+            background-color: var(--bg-paper);
+            color: var(--text-dark);
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+            /* Subtle paper texture */
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+        }
+
+        h1, h2, h3, .font-title { font-family: 'Quicksand', sans-serif; }
+        .font-handwriting { font-family: 'Kalam', cursive; }
+
+        /* HUD TOP */
+        #hud-top {
+            position: fixed; top: 0; left: 0; right: 0; padding: 20px 40px;
+            background: linear-gradient(to bottom, rgba(240, 234, 225, 0.95) 0%, transparent);
+            z-index: 1000;
+        }
+
+        .hud-bar-container { width: 120px; height: 6px; background: rgba(0,0,0,0.1); border-radius: 10px; overflow: hidden; }
+        .hud-bar-fill { height: 100%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 10px; }
+
+        /* CONTENT ARENA */
+        #mission-arena { height: 100vh; padding-bottom: 120px; }
+
+        /* POLAROID PANELS */
+        .polaroid-card {
+            background-color: var(--polaroid-white);
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.03);
+            position: relative;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(0,0,0,0.08); /* More harmonious and visible border */
+        }
+        /* Cute Tape Effect */
+        .polaroid-card::before {
+            content: ''; position: absolute; top: -10px; left: 50%; transform: translateX(-50%) rotate(-2deg);
+            width: 80px; height: 25px; background: rgba(255, 255, 255, 0.6);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); backdrop-filter: blur(2px); z-index: 10;
+        }
+
+        /* BUTTONS */
+        .btn-orange {
+            background-color: var(--accent-orange); color: white; border-radius: 50px;
+            font-family: 'Quicksand', sans-serif; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.1em; transition: all 0.2s ease; border: none; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 90, 95, 0.3);
+        }
+        .btn-orange:hover { background-color: #ff3b41; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 90, 95, 0.4); }
+        .btn-orange:active { transform: scale(0.96); }
+
+        .btn-blue {
+            background-color: var(--accent-blue); color: white; border-radius: 50px;
+            font-family: 'Quicksand', sans-serif; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.1em; transition: all 0.2s ease; border: none; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(8, 126, 139, 0.3);
+        }
+        .btn-blue:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(8, 126, 139, 0.4); }
+
+        /* SLIDER */
+        input[type=range].cute-slider { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range].cute-slider:focus { outline: none; }
+        input[type=range].cute-slider::-webkit-slider-runnable-track { width: 100%; height: 10px; cursor: pointer; background: rgba(0,0,0,0.05); border-radius: 10px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
+        input[type=range].cute-slider::-webkit-slider-thumb { -webkit-appearance: none; height: 32px; width: 32px; border-radius: 50%; background: var(--accent-orange); cursor: pointer; margin-top: -11px; box-shadow: 0 0 15px rgba(255,90,95,0.4); transition: transform 0.2s; border: 3px solid white; }
+        input[type=range].cute-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
+
+        /* FLIP CARDS (VOCAB) */
+        .photo-card { perspective: 1000px; cursor: pointer; }
+        .photo-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
+        .photo-card.flipped .photo-card-inner { transform: rotateY(180deg); }
+        .photo-card-front, .photo-card-back {
+            position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem;
+            background-color: var(--polaroid-white); border-radius: 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); border: 2px solid rgba(0,0,0,0.08);
+        }
+        .photo-card-front { padding-bottom: 3rem; } /* Extra space at bottom like real polaroid */
+        .photo-card-front img { width: 100%; height: 160px; object-fit: cover; background: #eee; border-radius: 4px; margin-bottom: 1rem; }
+        .photo-card-back { background-color: var(--accent-blue); color: white; transform: rotateY(180deg); border-color: var(--accent-blue); }
+
+        /* MCQ ROWS */
+        .mcq-row {
+            background: white; border: 2px solid rgba(0,0,0,0.08); border-radius: 16px; transition: all 0.2s ease;
+            cursor: pointer; display: flex; align-items: center; padding: 1.2rem 1.5rem; box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+        .mcq-row:hover:not(.locked-check) { border-color: var(--accent-orange); transform: translateX(5px); }
+        .mcq-row.correct { background: #fff0f0; border-color: var(--accent-orange); color: var(--accent-orange); }
+        .mcq-row.wrong { background: #f0f0f0; border-color: #999; color: #999; }
+
+        /* MATCH MAKER */
+        .match-node { background: white; border: 2px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 1rem 1.5rem; cursor: pointer; transition: all 0.2s; font-weight: 700; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .match-node:hover:not(.matched) { border-color: var(--accent-blue); transform: translateY(-2px); }
+        .match-node.active { border-color: var(--accent-blue); background: #e0f7fa; color: var(--accent-blue); }
+        .match-node.matched { background: var(--accent-orange); color: white; border-color: var(--accent-orange); pointer-events: none; opacity: 0.9; }
+
+        /* THE TUNER (MAGIC SWITCH) */
+        .tuner-checkbox:checked + .tuner-label { background-color: var(--accent-blue); border-color: var(--accent-blue); }
+        .tuner-checkbox:checked + .tuner-label .tuner-knob { transform: translateX(100%); background-color: white; }
+
+        /* THE FIXER */
+        .bug-word { color: var(--accent-orange); border-bottom: 3px dotted var(--accent-orange); cursor: pointer; font-weight: bold; transition: all 0.2s; padding: 0 4px; border-radius: 4px; }
+        .bug-word:hover { background: rgba(255, 90, 95, 0.1); }
+        .bug-fixed { color: var(--accent-blue); pointer-events: none; font-weight: bold; border-bottom: 3px solid var(--accent-blue); background: transparent; }
+
+        /* WORD BUILDER */
+        .wb-pill { background-color: white; padding: 12px 24px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: all 0.2s; display: inline-block; border: 2px solid rgba(0,0,0,0.1); box-shadow: 0 4px 10px rgba(0,0,0,0.05); font-family: 'Quicksand', sans-serif;}
+        .wb-pill:hover { background-color: var(--accent-blue); color: white; transform: translateY(-4px); border-color: var(--accent-blue); }
+        .wb-pill.used { opacity: 0; pointer-events: none; transform: scale(0.5); }
+        .wb-dropzone { min-height: 80px; border-bottom: 3px dashed rgba(0,0,0,0.2); display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: center; padding: 15px; width: 100%; max-width: 800px; margin: 0 auto; }
+        .pill-in-zone { background-color: var(--accent-blue); color: white; padding: 12px 24px; border-radius: 12px; font-weight: 800; cursor: default; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 10px rgba(8,126,139,0.3);}
+
+        /* CHAT SIMULATOR */
+        .chat-container { background: #f0f2f5; border-radius: 2rem; border: 8px solid white; box-shadow: 0 20px 40px rgba(0,0,0,0.1); overflow: hidden; }
+        .chat-bubble-left { background: white; color: var(--text-dark); padding: 1rem 1.2rem; border-radius: 1rem 1rem 1rem 0.2rem; align-self: flex-start; max-width: 80%; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 1rem; font-weight: 600;}
+        .chat-bubble-right { background: #DCF8C6; color: var(--text-dark); padding: 1rem 1.2rem; border-radius: 1rem 1rem 0.2rem 1rem; align-self: flex-end; max-width: 80%; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 1rem; font-weight: 600;}
+
+        /* SPEAKING STARTERS */
+        .starter-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; opacity: 0; }
+        .starter-content.open { max-height: 300px; opacity: 1; margin-top: 1.5rem; }
+
+        /* FOOTER CONSOLE */
+        #nav-console {
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); width: calc(100% - 48px); max-width: 900px;
+            background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); border: 1px solid rgba(0,0,0,0.1); border-radius: 100px;
+            padding: 12px 30px; z-index: 5000; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        }
+
+        /* DRAWERS */
+        .drawer { background: #fff; color: var(--text-dark); border-left: 1px solid rgba(0,0,0,0.1); transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); z-index: 5100; box-shadow: -10px 0 40px rgba(0,0,0,0.1);}
+        .drawer.active { transform: translateX(0); }
+
+        .fade-in { animation: fadeIn 0.5s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 10px; }
+
+        /* EFFECTS */
+        #confetti-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 9999; }
+        .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake { 10%, 90% { transform: translate3d(-2px, 0, 0); } 20%, 80% { transform: translate3d(3px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-5px, 0, 0); } 40%, 60% { transform: translate3d(5px, 0, 0); } }
+    </style>
+</head>
+<body class="flex flex-col h-screen overflow-hidden text-base">
+
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- HUD SUPERIOR -->
+    <div id="hud-top" class="hidden justify-between items-center w-full">
+        <div class="flex items-center gap-10">
+            <div class="flex flex-col gap-1">
+                <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest font-title">Confidence (HP)</span>
+                <div class="hud-bar-container"><div id="hp-bar" class="hud-bar-fill bg-[var(--accent-orange)]" style="width: 100%;"></div></div>
+            </div>
+            <div class="flex flex-col gap-1">
+                <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest font-title">Memories (XP)</span>
+                <div class="hud-bar-container"><div id="xp-bar" class="hud-bar-fill bg-[var(--accent-blue)]" style="width: 0%;"></div></div>
+            </div>
+        </div>
+        <div class="text-right flex items-center gap-6">
+            <button onclick="toggleTeacherHUD()" class="px-5 py-2 bg-white border border-gray-200 rounded-full text-[10px] uppercase tracking-widest text-gray-500 hover:text-[var(--accent-blue)] hover:border-[var(--accent-blue)] transition-all font-bold shadow-sm"><i class="fas fa-camera mr-2"></i>Teacher Menu</button>
+            <div>
+                <p class="font-title text-xl font-black text-[var(--text-dark)] tracking-tight leading-none uppercase">WOLF LABS</p>
+                <p class="text-[9px] font-bold text-[var(--accent-orange)] tracking-[0.2em] uppercase mt-1">Level A1 Beginner</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAINEL PRINCIPAL (CAPA) -->
+    <main id="dashboard" class="flex-grow flex flex-col items-center justify-center relative px-8 z-10 mt-10">
+        <button onclick="toggleFullscreen()" class="absolute top-4 right-8 text-gray-400 hover:text-gray-700 text-2xl" title="Fullscreen"><i class="fas fa-expand"></i></button>
+        <div class="max-w-5xl w-full flex flex-col items-center text-center space-y-8 animate-in fade-in">
+            
+            <div class="polaroid-card p-4 pb-12 rotate-[-3deg] mb-6">
+                <div class="w-48 h-40 bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
+                    <i class="fas fa-camera-retro text-6xl text-gray-400"></i>
+                </div>
+                <p class="font-handwriting text-2xl text-gray-600 mt-4 absolute bottom-3 left-1/2 transform -translate-x-1/2">Good times!</p>
+            </div>
+
+            <div class="space-y-4">
+                <p class="text-[var(--accent-blue)] font-bold text-xs tracking-[0.4em] uppercase font-title">WOLF LABS | Past Simple Module</p>
+                <h1 class="text-6xl md:text-8xl font-black text-[var(--text-dark)] leading-none tracking-tighter font-title uppercase drop-shadow-sm">THE WEEKEND <br> <span class="text-[var(--accent-orange)]">REWIND</span></h1>
+                <p class="text-xl text-gray-500 font-medium mt-4">Learn how to talk about your past experiences easily.</p>
+            </div>
+            
+            <div class="flex flex-wrap justify-center gap-3 font-title mt-4">
+                <span class="px-4 py-1.5 bg-white border border-gray-200 text-[10px] font-bold uppercase tracking-widest text-gray-600 rounded-full shadow-sm">Was / Were</span>
+                <span class="px-4 py-1.5 bg-white border border-gray-200 text-[10px] font-bold uppercase tracking-widest text-gray-600 rounded-full shadow-sm">Irregular Verbs</span>
+                <span class="px-4 py-1.5 bg-[var(--accent-blue)]/10 border border-[var(--accent-blue)]/30 text-[10px] font-bold uppercase tracking-widest text-[var(--accent-blue)] rounded-full">Did & Didn't</span>
+            </div>
+            
+            <button onclick="startMission()" class="mt-8 btn-orange px-14 py-5 text-lg">
+                Open Album
+            </button>
+        </div>
+    </main>
+
+    <!-- ARENA DE CONTEÚDO DA LIÇÃO -->
+    <main id="mission-arena" class="hidden flex-grow flex-col overflow-hidden relative mt-16">
+        <div id="mission-content" class="flex-grow overflow-y-auto px-6 py-12 flex flex-col items-center w-full"></div>
+    </main>
+
+    <!-- CONSOLA DE NAVEGAÇÃO (Sempre Visível) -->
+    <footer id="nav-console" class="hidden flex justify-between items-center w-full">
+        <div class="flex items-center gap-6 w-1/4">
+            <button onclick="goHome()" class="text-gray-400 hover:text-[var(--accent-orange)] transition-colors"><i class="fas fa-power-off text-xl"></i></button>
+            <div class="flex flex-col font-title">
+                <span id="console-title" class="text-[12px] font-black text-[var(--text-dark)] uppercase tracking-widest truncate">A1</span>
+                <span id="console-type" class="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Rewind</span>
+            </div>
+        </div>
+        <div class="flex flex-col items-center gap-3 w-1/2">
+            <div class="flex items-center gap-12">
+                <button onclick="prevStep()" class="text-gray-300 hover:text-gray-600 transition-colors"><i class="fas fa-chevron-left text-2xl"></i></button>
+                <span id="console-counter" class="font-title text-xs font-bold text-gray-400 tracking-[0.4em]">PHOTO 01</span>
+                <button onclick="nextStep()" class="text-gray-400 hover:text-[var(--accent-blue)] hover:scale-110 transition-all"><i class="fas fa-chevron-right text-2xl"></i></button>
+            </div>
+            <div class="w-64 h-2 bg-gray-100 rounded-full overflow-hidden border border-gray-200">
+                <div id="progress-bar" class="h-full bg-[var(--accent-blue)] transition-all duration-300" style="width: 0%;"></div>
+            </div>
+        </div>
+        <div class="flex items-center justify-end gap-6 w-1/4">
+            <button onclick="toggleWhiteboard()" class="text-gray-400 hover:text-[var(--accent-blue)] transition-colors" title="Class Notes"><i class="fas fa-pen-nib text-xl"></i></button>
+            <button onclick="toggleFullscreen()" class="text-gray-400 hover:text-gray-700 transition-colors" title="Fullscreen"><i class="fas fa-expand text-xl"></i></button>
+            <button onclick="toggleLessonNavigator()" class="text-gray-400 hover:text-[var(--accent-blue)] transition-colors" title="Album Pages"><i class="fas fa-images text-xl"></i></button>
+        </div>
+    </footer>
+
+    <!-- GAVETAS LATERAIS (DRAWERS) -->
+    
+    <!-- Whiteboard (Notes) -->
+    <aside id="whiteboard" class="fixed right-0 top-0 h-screen w-[450px] drawer flex flex-col pt-24 z-[5100]">
+        <div class="p-8 border-b border-gray-200 flex justify-between items-center bg-white">
+            <h2 class="font-title text-2xl font-black text-[var(--text-dark)] tracking-tight">Class Notes</h2>
+            <button onclick="toggleWhiteboard()" class="text-gray-400 hover:text-gray-700"><i class="fas fa-times text-xl"></i></button>
+        </div>
+        <div class="p-4 bg-gray-50 flex flex-wrap gap-2 border-b border-gray-200">
+            <button onclick="insertTag('[VOCAB]')" class="text-[10px] bg-white border border-gray-200 text-gray-600 px-3 py-1.5 rounded-full hover:bg-[var(--accent-orange)] hover:text-white transition-all font-bold uppercase tracking-widest font-title">Vocab</button>
+            <button onclick="insertTag('[GRAMMAR]')" class="text-[10px] bg-white border border-gray-200 text-gray-600 px-3 py-1.5 rounded-full hover:bg-[var(--accent-blue)] hover:text-white transition-all font-bold uppercase tracking-widest font-title">Grammar</button>
+        </div>
+        <textarea id="wb-text" class="flex-grow bg-[#fcfcfc] text-[var(--accent-blue)] p-8 resize-none focus:outline-none font-handwriting text-2xl leading-relaxed" placeholder="Write your notes here..."></textarea>
+    </aside>
+
+    <!-- Navegador de Aula -->
+    <aside id="lesson-navigator" class="fixed right-0 top-0 h-screen w-80 drawer flex flex-col pt-24 z-[5100]">
+        <div class="p-8 border-b border-gray-100 text-[var(--text-dark)] font-bold uppercase tracking-widest flex justify-between items-center font-title text-xl bg-gray-50">Album Pages <button onclick="toggleLessonNavigator()"><i class="fas fa-times text-gray-400 hover:text-gray-700"></i></button></div>
+        <div id="nav-steps-list" class="flex-grow overflow-y-auto p-4 space-y-2 bg-white"></div>
+    </aside>
+
+    <!-- HUD do Professor -->
+    <aside id="teacher-hud" class="fixed right-0 top-0 h-screen w-[350px] drawer flex flex-col pt-24 z-[5100]">
+        <div class="p-8 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+            <h2 class="font-title text-2xl font-black text-[var(--accent-blue)] tracking-tight uppercase"><i class="fas fa-camera mr-2"></i> Teacher Menu</h2>
+            <button onclick="toggleTeacherHUD()"><i class="fas fa-times text-xl text-gray-400 hover:text-gray-700"></i></button>
+        </div>
+        <div class="flex-grow overflow-y-auto p-8 space-y-8 bg-white">
+            <div class="bg-[var(--bg-paper)] p-6 rounded-xl border border-gray-200">
+                <p class="text-[10px] font-bold text-[var(--accent-blue)] uppercase tracking-widest mb-3 font-title">Module Goal</p>
+                <p class="text-sm text-gray-600 leading-relaxed">Level A1. Teach the Past Simple without overwhelming the student. Use the concept of <strong>DID</strong> as a "magic word" that makes the main verb return to its base form.</p>
+            </div>
+            <div>
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4 font-title">Send Praise</p>
+                <div class="space-y-3">
+                    <button onclick="triggerPraise('NICE!', 'Good speaking.')" class="w-full py-4 bg-[var(--accent-blue)]/10 text-[var(--accent-blue)] border border-[var(--accent-blue)]/30 rounded-xl font-bold text-xs hover:bg-[var(--accent-blue)] hover:text-white transition-all font-title tracking-widest">SEND: BLUE</button>
+                    <button onclick="triggerPraise('AMAZING!', 'Perfect grammar.')" class="w-full py-4 bg-[var(--accent-orange)]/10 text-[var(--accent-orange)] border border-[var(--accent-orange)]/30 rounded-xl font-bold text-xs hover:bg-[var(--accent-orange)] hover:text-white transition-all font-title tracking-widest">SEND: ORANGE</button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Overlay de Elogio (Praise) -->
+    <div id="praise-overlay" class="fixed inset-0 z-[6000] flex items-center justify-center bg-white/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 p-4">
+        <div id="praise-card" class="polaroid-card p-16 rounded-[2rem] text-center transform scale-50 transition-transform duration-500 border-2">
+            <h2 id="praise-main" class="font-title text-5xl md:text-7xl font-black tracking-tighter uppercase mb-4 drop-shadow-lg"></h2>
+            <p id="praise-sub" class="text-xl font-bold tracking-widest uppercase font-title mt-6 opacity-80"></p>
+        </div>
+    </div>
+
+    <!-- SCRIPT DO MOTOR PRINCIPAL -->
+    <script>
+        // --- ESTADO DO SISTEMA ---
+        let state = { hp: 100, xp: 0, current: 0 };
+        const esc = (s) => s ? s.replace(/'/g, "\\'").replace(/"/g, "&quot;") : "";
+        
+        const TYPES = { COVER: "Intro", WARMUP: "Warm Up", VOCAB: "Photos", TAPE: "Video", GRAMMAR: "Grammar", DRILL: "Practice", TUNER: "Magic", BUILDER: "Build", SPEAKING: "Speak", WRAP: "End" };
+
+        function step(type, title, html) { return { type, title, html }; }
+
+        function updateHUD() {
+            const h = document.getElementById('hp-bar'); if(h) h.style.width = Math.max(0, state.hp) + '%';
+            const x = document.getElementById('xp-bar'); if(x) x.style.width = Math.min(100, (state.xp / 25)) + '%';
+        }
+
+        function insertTag(tag) { 
+            const text = document.getElementById('wb-text'); 
+            if (text) { text.value += (text.value.length > 0 ? '\n' : '') + tag + ' '; text.focus(); } 
+        }
+
+        // --- TEMPLATES TEMÁTICOS (SCRAPBOOK A1) ---
+        
+        // Guide
+        const bGuide = (title, points) => step(TYPES.COVER, title, `
+            <div class="max-w-4xl mx-auto space-y-10 animate-in fade-in py-10">
+                <div class="polaroid-card border-l-4 border-[var(--accent-orange)]">
+                    <p class="text-[var(--accent-orange)] font-bold uppercase tracking-[0.3em] text-[10px] font-title mb-6 flex items-center gap-3">
+                        <i class="fas fa-map text-lg"></i> WOLF LABS | Lesson Guide
+                    </p>
+                    <h2 class="font-title text-4xl md:text-5xl font-black text-[var(--text-dark)] tracking-tighter leading-none mb-10 pb-8 border-b border-gray-100 uppercase">${title}</h2>
+                    <div class="space-y-6">
+                        ${points.map(p => `<p class="text-xl text-gray-600 font-medium leading-relaxed flex items-start gap-4"><i class="fas fa-circle text-[var(--accent-blue)] text-[8px] mt-2.5 opacity-50"></i> ${p}</p>`).join('')}
+                    </div>
+                </div>
+            </div>
+        `);
+
+        // Warm Up (Slider)
+        const bSlider = (title, prompt, optA, optB, starter) => step(TYPES.WARMUP, title, `
+            <div class="max-w-4xl mx-auto flex flex-col items-center justify-center min-h-[60vh] text-center space-y-12 animate-in fade-in">
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.4em] mb-2 font-title border border-gray-200 px-4 py-1.5 rounded-full bg-white">WOLF LABS | Check-In</p>
+                <h2 class="font-title text-4xl md:text-5xl font-black text-[var(--text-dark)] tracking-tight leading-tight">${prompt}</h2>
+                
+                <div class="w-full max-w-3xl polaroid-card py-16 flex flex-col items-center mt-8">
+                    <div class="flex justify-between w-full px-8 mb-10 text-5xl">
+                        <span class="opacity-80 hover:opacity-100 transition-opacity" title="Relaxing">🛋️</span>
+                        <span class="opacity-80 hover:opacity-100 transition-opacity" title="Busy">🏃‍♂️</span>
+                    </div>
+                    <div class="w-full px-12">
+                        <input type="range" min="0" max="100" value="50" class="cute-slider">
+                    </div>
+                    <div class="flex justify-between w-full px-8 mt-10 text-sm font-bold text-gray-500 uppercase tracking-widest font-title">
+                        <span>${optA}</span>
+                        <span>${optB}</span>
+                    </div>
+                </div>
+
+                <div class="w-full max-w-3xl p-8 bg-white border-l-4 border-[var(--accent-orange)] mt-8 text-left rounded-r-2xl shadow-sm">
+                    <p class="text-[10px] font-bold text-[var(--accent-orange)] uppercase tracking-widest mb-4 font-title">Let's talk</p>
+                    <p class="text-xl font-bold text-[var(--text-dark)] mb-2">Tell your teacher about Saturday and Sunday.</p>
+                    <p class="text-base font-bold text-gray-500 mt-4 italic font-handwriting text-2xl">"${starter}"</p>
+                </div>
+            </div>
+        `);
+
+        // Polaroids (Vocab)
+        function bPolaroids(title, words) {
+            const nodesHtml = words.map((w, i) => {
+                const rotation = (i % 2 === 0) ? '-rotate-3' : 'rotate-3';
+                return `
+                <div class="photo-card w-56 h-[320px] ${rotation}" onclick="this.classList.toggle('flipped')">
+                    <div class="photo-card-inner">
+                        <div class="photo-card-front">
+                            <div class="w-full h-32 bg-gray-100 rounded mb-4 flex items-center justify-center text-6xl shadow-inner border border-gray-200">
+                                ${w.icon && w.icon.includes('fa-') ? `<i class="${w.icon}"></i>` : (w.icon || '📸')}
+                            </div>
+                            <span class="font-handwriting font-bold text-[var(--text-dark)] text-3xl mt-2">${w.word}</span>
+                            <span class="font-title text-[10px] text-gray-400 mt-auto tracking-widest uppercase border border-gray-200 px-3 py-1 rounded-full"><i class="fas fa-hand-pointer mr-1"></i> Flip</span>
+                        </div>
+                        <div class="photo-card-back">
+                            <p class="text-white text-xs font-bold uppercase tracking-widest mb-4 border-b border-white/20 pb-2 w-full text-center">Meaning</p>
+                            <p class="text-white text-xl leading-snug font-bold mb-6 font-title">${w.def}</p>
+                            
+                            <div class="mt-auto w-full bg-black/10 p-4 rounded-lg text-left">
+                                <p class="text-white font-bold text-[10px] uppercase tracking-widest mb-2 font-title">Discuss</p>
+                                <p class="text-white text-sm font-bold mb-2 leading-tight">${w.q}</p>
+                                <p class="text-white/80 text-xs italic">"${w.starter}"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+
+            return step(TYPES.VOCAB, title, `
+                <div class="max-w-6xl mx-auto flex flex-col items-center py-10 animate-in fade-in">
+                    <div class="text-center mb-16">
+                        <p class="text-[10px] font-bold text-[var(--accent-blue)] uppercase tracking-[0.4em] mb-4 font-title bg-[var(--accent-blue)]/10 inline-block px-5 py-2 rounded-full border border-[var(--accent-blue)]/20">WOLF LABS | Vocabulary</p>
+                        <h2 class="font-title text-5xl font-black text-[var(--text-dark)] tracking-tight">${title}</h2>
+                    </div>
+                    <div class="flex flex-wrap justify-center gap-10">
+                        ${nodesHtml}
+                    </div>
+                </div>
+            `);
+        }
+
+        // The Tape (Video)
+        const bVideo = (title, videoId, instruction, start=0, end=0) => {
+            let timeStr = `?start=${start}`;
+            if(end > 0) timeStr += `&end=${end}`;
+            return step(TYPES.TAPE, title, `
+            <div class="max-w-5xl mx-auto w-full flex flex-col items-center py-10 animate-in fade-in">
+                <div class="text-center mb-10">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.4em] mb-4 font-title"><i class="fab fa-youtube mr-2 text-[var(--accent-orange)]"></i> WOLF LABS | Watch & Listen</p>
+                    <h2 class="font-title text-5xl font-black text-[var(--text-dark)] tracking-tight">${title}</h2>
+                </div>
+                <div class="polaroid-card w-full max-w-4xl flex flex-col items-center p-8 border-b-4 border-[var(--accent-orange)]">
+                    <p class="text-xl text-[var(--text-dark)] font-bold mb-8 text-center max-w-2xl leading-relaxed">${instruction}</p>
+                    <div class="w-full aspect-video bg-black border border-gray-200 shadow-xl relative overflow-hidden rounded-lg">
+                        <iframe class="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/${videoId}${timeStr}&rel=0" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+        `)};
+
+        // MCQ
+        const bMCQ = (id, title, prompt, options, correctIdx, followup, starter) => step(TYPES.DRILL, title, `
+            <div class="max-w-4xl mx-auto flex flex-col items-center justify-center min-h-[60vh] text-center space-y-10 animate-in fade-in">
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.4em] mb-2 font-title bg-white border border-gray-200 px-4 py-1.5 rounded-full">WOLF LABS | Observation</p>
+                <h2 class="font-title text-4xl md:text-5xl font-black text-[var(--text-dark)] tracking-tight leading-tight">${prompt}</h2>
+                
+                <div class="w-full max-w-2xl space-y-4 mt-8" id="quiz-options-${id}">
+                    ${options.map((opt, i) => `
+                        <div class="mcq-row locked-check" onclick="handleQuizTrial('${id}', this, ${i === correctIdx}, '${esc(followup)}', '${esc(starter)}')">
+                            <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-lg font-bold text-gray-500 mr-6 font-title border border-gray-200">${String.fromCharCode(65 + i)}</div>
+                            <span class="text-2xl font-bold text-[var(--text-dark)] text-left">${opt}</span>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div id="followup-box-${id}" class="hidden w-full max-w-2xl p-8 bg-white border-l-4 border-[var(--accent-blue)] mt-8 text-left rounded-r-2xl shadow-sm">
+                    <p class="text-[10px] font-bold text-[var(--accent-blue)] uppercase tracking-widest mb-4 font-title">Your turn</p>
+                    <p class="text-xl font-bold text-[var(--text-dark)] mb-4">${followup}</p>
+                    ${starter ? `<p class="text-2xl font-bold text-gray-500 font-handwriting">"${starter}"</p>` : ''}
+                </div>
+            </div>
+        `);
+
+        // Photo Caption Drill
+        const bPhotoCaption = (id, title, imgIcon, prompt, options, correctIdx) => step(TYPES.DRILL, title, `
+            <div class="max-w-4xl mx-auto flex flex-col items-center py-10 animate-in fade-in">
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.4em] mb-4 font-title bg-white px-4 py-1.5 rounded-full border border-gray-200">WOLF LABS | Photo Caption</p>
+                <h2 class="font-title text-4xl md:text-5xl font-black text-[var(--text-dark)] tracking-tight mb-10 text-center">${title}</h2>
+                
+                <div class="polaroid-card p-6 pb-16 rotate-2 mb-12 w-full max-w-md bg-white shadow-xl">
+                    <div class="w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center text-7xl mb-6 shadow-inner border border-gray-200">
+                        ${imgIcon}
+                    </div>
+                    <p class="font-handwriting text-3xl text-center text-gray-700">${prompt}</p>
+                </div>
+                
+                <div class="w-full max-w-2xl grid grid-cols-1 md:grid-cols-3 gap-4 options-group" data-correct="${correctIdx}">
+                    ${options.map((opt, i) => `
+                        <button class="mcq-btn btn-orange px-6 py-4 text-xl bg-white border-2 border-gray-200 hover:bg-gray-50 shadow-sm transition-all" style="color: var(--text-dark); background: white;" onclick="handleCaptionTrial('${id}', this, ${i === correctIdx})">${opt}</button>
+                    `).join('')}
+                </div>
+                <div id="fb-photo-${id}" class="hidden mt-8 text-[var(--accent-orange)] font-title font-black text-2xl bg-[var(--accent-orange)]/10 px-8 py-4 rounded-full border border-[var(--accent-orange)]/20">Great memory!</div>
+            </div>
+        `);
+
+        // Grammar Simple (Core)
+        const bGrammar = (title, rule, examples, tagColor="var(--accent-blue)") => step(TYPES.GRAMMAR, title, `
+            <div class="max-w-5xl mx-auto space-y-10 animate-in fade-in py-10">
+                <div class="text-center space-y-4 mb-16">
+                    <p class="text-[10px] font-bold text-white uppercase tracking-[0.4em] mb-4 font-title inline-block px-5 py-2 rounded-full shadow-sm" style="background-color: ${tagColor}">WOLF LABS | Grammar Core</p>
+                    <h2 class="font-title text-5xl md:text-6xl font-black text-[var(--text-dark)] tracking-tighter">${title}</h2>
+                </div>
+                <div class="polaroid-card mb-12 border-t-4 shadow-sm" style="border-top-color: ${tagColor}">
+                    <p class="text-2xl text-[var(--text-dark)] font-medium leading-relaxed">${rule.replace(/\[(.*?)\]/g, `<span style="color: ${tagColor}" class="font-black">$1</span>`)}</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                    ${examples.map(ex => `
+                        <div class="bg-white border border-gray-100 p-10 rounded-2xl shadow-sm text-center hover:shadow-md transition-shadow">
+                            <p class="text-[10px] font-bold uppercase text-gray-400 tracking-widest mb-6 font-title">${ex.context}</p>
+                            <p class="text-3xl font-black text-[var(--text-dark)] leading-tight font-title">"${ex.text.replace(/\[(.*?)\]/g, `<span style="color: ${tagColor}">$1</span>`)}"</p>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `);
+
+        // The Fixer
+        function bFixer(title, codeLines, expectedFixes) {
+            let expectedFixesCopy = [...expectedFixes]; 
+            let htmlLines = codeLines.map((line, i) => {
+                return line.replace(/\[(.*?)\]/g, (match, word) => {
+                    const fixData = expectedFixesCopy.shift();
+                    return `<span class="bug-word" onclick="triggerFixer(this, '${esc(fixData)}')">${word}</span>`;
+                });
+            }).join('<br><br>');
+
+            return step(TYPES.DRILL, title, `
+                <div class="max-w-4xl mx-auto w-full flex flex-col items-center py-10 animate-in fade-in">
+                    <p class="text-[10px] font-bold text-[var(--accent-orange)] uppercase tracking-[0.4em] mb-4 font-title bg-[var(--accent-orange)]/10 px-4 py-1.5 rounded-full animate-pulse">WOLF LABS | Error Detected</p>
+                    <h2 class="font-title text-4xl md:text-5xl font-black text-[var(--text-dark)] tracking-tight mb-8 text-center">${title}</h2>
+                    <p class="text-gray-500 text-xl mb-12 text-center font-bold">Click the <span class="text-[var(--accent-orange)]">orange words</span> to fix the grammar errors. Type the correct past tense verb.</p>
+                    
+                    <div class="w-full polaroid-card relative overflow-hidden text-3xl leading-relaxed text-[var(--text-dark)] font-title border-t-4 border-[var(--accent-orange)]">
+                        <div class="font-bold p-6">
+                            ${htmlLines}
+                        </div>
+                        
+                        <div id="fix-panel" class="absolute bottom-0 left-0 w-full bg-gray-50 border-t-2 border-[var(--accent-blue)] p-8 transform translate-y-full transition-transform duration-300 flex items-center gap-6 z-20">
+                            <span class="text-[var(--accent-blue)] font-bold text-2xl font-title">Write fix:</span>
+                            <input type="text" id="fix-input" class="bg-white text-[var(--text-dark)] border-2 border-gray-200 rounded-xl px-6 py-4 flex-1 text-2xl focus:outline-none focus:border-[var(--accent-blue)] font-title font-bold" autocomplete="off" placeholder="Type here...">
+                            <button onclick="submitFixer()" class="btn-blue px-10 py-4 text-lg">Fix it!</button>
+                        </div>
+                    </div>
+                    <div id="fixer-hub" class="hidden mt-10 text-[var(--accent-blue)] font-title font-black text-2xl bg-[var(--accent-blue)]/10 p-6 rounded-2xl border border-[var(--accent-blue)]/20">Perfect! Sentences fixed. Please read them aloud.</div>
+                </div>
+            `);
+        }
+
+        // Match Maker
+        function bMatchMaker(title, pairs) {
+            let lefts = pairs.map((p, i) => ({text: p.left, id: i, type: 'L'}));
+            let rights = pairs.map((p, i) => ({text: p.right, id: i, type: 'R'}));
+            // Shuffle
+            for (let i = lefts.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [lefts[i], lefts[j]] = [lefts[j], lefts[i]]; }
+            for (let i = rights.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [rights[i], rights[j]] = [rights[j], rights[i]]; }
+
+            const buildNodes = (arr) => arr.map(item => `
+                <div class="match-node text-2xl text-center" data-id="${item.id}" data-type="${item.type}" onclick="handleMatch(this)">
+                    ${item.text}
+                </div>
+            `).join('');
+
+            return step(TYPES.DRILL, title, `
+                <div class="max-w-5xl mx-auto w-full flex flex-col items-center py-10 animate-in fade-in">
+                    <p class="text-[10px] font-bold text-[var(--accent-blue)] uppercase tracking-[0.4em] mb-6 font-title bg-[var(--accent-blue)]/10 px-4 py-1.5 rounded-full border border-[var(--accent-blue)]/20">WOLF LABS | Memory Match</p>
+                    <h2 class="font-title text-5xl font-black text-[var(--text-dark)] tracking-tight mb-8 text-center">${title}</h2>
+                    <p class="text-gray-500 text-xl font-bold mb-12 text-center">Match the PRESENT verb to the PAST verb.</p>
+                    
+                    <div class="w-full max-w-4xl grid grid-cols-2 gap-16 relative" id="match-board">
+                        <div class="flex flex-col gap-6" id="match-left">${buildNodes(lefts)}</div>
+                        <div class="flex flex-col gap-6" id="match-right">${buildNodes(rights)}</div>
+                    </div>
+                    <div id="match-hub" class="hidden mt-12 text-white font-title font-black text-2xl bg-[var(--accent-orange)] p-6 rounded-2xl shadow-lg">AMAZING! All pairs matched.</div>
+                </div>
+            `);
+        }
+
+        // Tuner (Toggle Switch)
+        const bTuner = (id, title, instruction, textAff, textAlt, feedback, tagColor="var(--accent-blue)") => step(TYPES.TUNER, title, `
+            <div class="max-w-4xl mx-auto flex flex-col items-center justify-center min-h-[60vh] text-center space-y-12 animate-in fade-in">
+                <p class="text-[10px] font-bold text-white uppercase tracking-[0.4em] mb-2 font-title px-4 py-1.5 rounded-full" style="background-color: ${tagColor}">WOLF LABS | Magic Switch</p>
+                <h2 class="font-title text-5xl font-black text-[var(--text-dark)] tracking-tight leading-tight">${title}</h2>
+                <p class="text-2xl text-gray-500 font-bold max-w-2xl">${instruction}</p>
+                
+                <div class="w-full max-w-3xl polaroid-card flex flex-col items-center py-16 border-t-4" style="border-top-color: ${tagColor}">
+                    <div class="flex items-center gap-8 mb-16">
+                        <span class="font-black text-[var(--text-dark)] font-title tracking-widest text-xl w-32 text-right uppercase" id="mode-aff-${id}">Normal</span>
+                        <div class="relative inline-block w-24 h-12 align-middle select-none">
+                            <input type="checkbox" id="tuner-switch-${id}" class="tuner-checkbox absolute block w-6 h-6 rounded-full opacity-0 z-10 w-full h-full cursor-pointer" onchange="toggleTuner('${id}', this, '${esc(textAff)}', '${esc(textAlt)}', '${esc(feedback)}', '${tagColor}')">
+                            <label for="tuner-switch-${id}" class="tuner-label block overflow-hidden h-12 rounded-full bg-gray-200 border-2 border-gray-300 cursor-pointer transition-colors duration-300">
+                                <span class="tuner-knob absolute block w-10 h-10 m-0.5 bg-white rounded-full transition-transform duration-300 ease-in-out shadow-md"></span>
+                            </label>
+                        </div>
+                        <span class="font-black text-gray-400 font-title tracking-widest text-xl w-32 text-left uppercase" id="mode-alt-${id}">Magic</span>
+                    </div>
+
+                    <div class="bg-gray-50 w-full p-10 rounded-2xl flex items-center justify-center min-h-[160px] border border-gray-200 shadow-inner">
+                        <p id="tuner-text-${id}" class="text-4xl font-black tracking-wide transition-opacity duration-300 font-title text-[var(--text-dark)] leading-relaxed">${textAff.replace(/\[(.*?)\]/g, `<span style="color: ${tagColor}">$1</span>`)}</p>
+                    </div>
+                    
+                    <div id="tuner-fb-${id}" class="hidden mt-10 font-bold text-2xl font-handwriting text-gray-600">
+                        ${feedback}
+                    </div>
+                </div>
+            </div>
+        `);
+
+        // Word Builder
+        function bWordBuilder(id, title, instruction, expectedArr) {
+            const expectedStr = JSON.stringify(expectedArr).replace(/"/g, '&quot;');
+            let wordBtns = shuffleArray([...expectedArr]).map(w => `<span class="wb-pill text-3xl" onclick="moveWbWord(this, '${esc(w)}', '${id}')">${w}</span>`).join('');
+            return step(TYPES.BUILDER, title, `
+                <div class="max-w-4xl mx-auto w-full flex flex-col items-center py-10 animate-in fade-in" data-expected="${expectedStr}" id="wb-data-${id}">
+                    <p class="text-[10px] font-bold text-[var(--accent-blue)] uppercase tracking-[0.4em] mb-4 font-title bg-[var(--accent-blue)]/10 px-4 py-1.5 rounded-full">WOLF LABS | Sentence Builder</p>
+                    <h2 class="font-title text-4xl md:text-5xl font-black text-[var(--text-dark)] tracking-tight mb-8 text-center">${title}</h2>
+                    <p class="text-gray-500 font-bold text-2xl mb-12 text-center">${instruction}</p>
+                    
+                    <div class="w-full polaroid-card text-center pb-12 border-t-4 border-[var(--accent-blue)]">
+                        <div class="wb-dropzone text-3xl" id="wb-dropzone-${id}"></div>
+                        <div class="flex justify-center flex-wrap gap-4 mt-12" id="wb-bank-${id}">
+                            ${wordBtns}
+                        </div>
+                        <button onclick="resetWb('${id}')" class="mt-12 text-sm font-bold text-gray-400 hover:text-gray-700 uppercase tracking-widest transition font-title"><i class="fas fa-undo mr-2"></i>Reset</button>
+                    </div>
+                    <div id="wb-fb-${id}" class="hidden mt-8 p-6 bg-[var(--accent-blue)] text-white font-black font-title text-2xl rounded-2xl shadow-lg">Perfect!</div>
+                </div>
+            `);
+        }
+
+        // Bamboozle (True/False)
+        const bBamboozle = (title, statement1, statement2) => step(TYPES.DRILL, title, `
+            <div class="max-w-5xl mx-auto w-full flex flex-col items-center py-10 animate-in fade-in">
+                <p class="text-[10px] font-bold text-[var(--accent-orange)] uppercase tracking-[0.4em] mb-6 font-title border border-[var(--accent-orange)]/30 px-4 py-1.5 rounded-full text-[var(--accent-orange)]">WOLF LABS | True or False?</p>
+                <h2 class="font-title text-5xl font-black text-[var(--text-dark)] tracking-tight mb-16 text-center">${title}</h2>
+                
+                <div id="bamb-q1" class="w-full max-w-4xl polaroid-card text-center mb-8 border-t-4 border-[var(--accent-blue)]">
+                    <p class="text-4xl font-black text-[var(--text-dark)] leading-relaxed font-title mb-12">${statement1.text.replace(/\[(.*?)\]/g, '<span class="text-[var(--accent-blue)]">$1</span>')}</p>
+                    <div class="flex gap-8 justify-center">
+                        <button class="btn-blue px-12 py-5 text-xl" onclick="checkBamb(1, ${statement1.isTrue})">TRUE (YES)</button>
+                        <button class="btn-blue px-12 py-5 text-xl" style="background: white; border: 2px solid var(--accent-blue); color: var(--accent-blue);" onclick="checkBamb(1, ${!statement1.isTrue})">FALSE (NO)</button>
+                    </div>
+                </div>
+                
+                <div id="bamb-q2" class="hidden w-full max-w-4xl polaroid-card text-center mb-8 border-t-4 border-[var(--accent-orange)]">
+                    <p class="text-4xl font-black text-[var(--text-dark)] leading-relaxed font-title mb-12">${statement2.text.replace(/\[(.*?)\]/g, '<span class="text-[var(--accent-orange)]">$1</span>')}</p>
+                    <div class="flex gap-8 justify-center">
+                        <button class="btn-orange px-12 py-5 text-xl" onclick="checkBamb(2, ${statement2.isTrue})">TRUE (YES)</button>
+                        <button class="btn-orange px-12 py-5 text-xl" style="background: white; border: 2px solid var(--accent-orange); color: var(--accent-orange);" onclick="checkBamb(2, ${!statement2.isTrue})">FALSE (NO)</button>
+                    </div>
+                </div>
+                
+                <div id="bamb-fb" class="hidden mt-8 p-6 bg-[var(--accent-yellow)] text-[var(--text-dark)] font-black text-3xl font-title text-center w-full max-w-4xl rounded-2xl shadow-lg">Good job!</div>
+            </div>
+        `);
+
+        // Chat Simulator
+        const bChat = (title, msgs) => step(TYPES.DRILL, title, `
+            <div class="max-w-4xl mx-auto flex flex-col items-center justify-center min-h-[60vh] py-10 animate-in fade-in">
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.4em] mb-4 font-title">WOLF LABS | Reading Practice</p>
+                <h2 class="font-title text-4xl md:text-5xl font-black text-[var(--text-dark)] tracking-tight mb-10 text-center">${title}</h2>
+                <div class="w-full max-w-md chat-container h-[500px] flex flex-col relative">
+                    <div class="bg-white p-4 text-center font-bold border-b border-gray-100 flex items-center justify-center gap-3 text-lg">
+                        <div class="w-10 h-10 rounded-full bg-[var(--accent-blue)] flex items-center justify-center text-white"><i class="fas fa-user"></i></div>
+                        Tom
+                    </div>
+                    <div class="flex-1 p-6 overflow-y-auto flex flex-col bg-[#e5ddd5]">
+                        ${msgs.map(m => `<div class="${m.s === 'A' ? 'chat-right' : 'chat-left'} text-lg"><p>${m.t}</p></div>`).join('')}
+                    </div>
+                </div>
+                <p class="mt-8 text-gray-500 font-bold text-xl">Read the messages. What did Tom do?</p>
+            </div>
+        `);
+
+        // Roleplay
+        const bRoleplay = (title, prompt, hint) => step(TYPES.SPEAKING, title, `
+            <div class="max-w-4xl mx-auto w-full flex flex-col items-center justify-center min-h-[60vh] text-center animate-in fade-in py-10 relative">
+                <div class="w-32 h-32 bg-white border border-gray-200 rounded-full flex items-center justify-center mb-8 shadow-md"><i class="fas fa-comments text-5xl text-[var(--accent-orange)]"></i></div>
+                <p class="text-[10px] font-bold text-[var(--accent-orange)] uppercase tracking-[0.4em] mb-4 font-title">WOLF LABS | Speaking Time</p>
+                <h2 class="font-title text-5xl md:text-6xl font-black tracking-tight text-[var(--text-dark)] leading-tight mb-12">${prompt}</h2>
+                
+                <div class="w-full polaroid-card text-left">
+                    <div class="flex justify-between items-center cursor-pointer" onclick="toggleStarter(this)">
+                        <div class="flex items-center gap-4">
+                            <i class="fas fa-lightbulb text-[var(--accent-yellow)] text-3xl"></i>
+                            <span class="font-title text-[var(--text-dark)] font-black tracking-widest uppercase text-xl">Cheat Sheet (Click to open)</span>
+                        </div>
+                        <i class="fas fa-chevron-down text-gray-400"></i>
+                    </div>
+                    <div class="starter-content text-left">
+                        <div class="bg-gray-50 p-8 rounded-xl border-l-4 border-[var(--accent-yellow)] mt-6">
+                            <p class="text-3xl font-bold text-gray-600 leading-relaxed font-handwriting">"${hint}"</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `);
+
+        const bWrap = () => step(TYPES.WRAP, "Album Complete", `
+            <div class="text-center max-w-3xl mx-auto flex flex-col items-center justify-center min-h-[60vh] animate-in fade-in">
+                <div class="w-48 h-48 rounded-full bg-[var(--accent-yellow)]/20 mx-auto flex items-center justify-center text-7xl text-[var(--accent-yellow)] mb-12 shadow-lg border border-[var(--accent-yellow)]/50">
+                    <i class="fas fa-star"></i>
+                </div>
+                <h1 class="font-title text-6xl md:text-8xl font-black text-[var(--text-dark)] tracking-tighter mb-6 uppercase">Great Job!</h1>
+                <p class="text-3xl text-gray-500 mb-16 font-bold font-handwriting">You completed the Weekend Rewind.</p>
+                <button onclick="goHome()" class="btn-orange px-14 py-6 text-xl">Close Album</button>
+            </div>
+        `);
+
+        // --- LESSON DATA (25 STEPS - A1 Weekend Rewind) ---
+        const lessonData = [
+            // PHASE 1: CONTEXT
+            bGuide("The Weekend Rewind", [
+                "Level: A1 (Beginner).", 
+                "Focus: Past Simple (Was, Irregular Verbs, Did, Didn't).",
+                "Theme: Weekend activities and memories.",
+                "Goal: Learn how to talk about your weekend easily."
+            ]),
+            
+            bSlider("Check-In", "How was your weekend?", "🛋️ Relaxing", "🏃‍♂️ Busy", "My weekend was..."),
+
+            bPolaroids("Weekend Activities", [
+                {icon: "🏔️", word: "Go Hiking", def: "To walk a long distance in nature.", ex: "I went hiking in the mountains.", q: "Do you like hiking?", starter: "Yes, I love... / No, it's tiring."},
+                {icon: "🏖️", word: "The Beach", def: "A sandy shore by the ocean.", ex: "The beach was very hot.", q: "Do you prefer the beach or the city?", starter: "I prefer..."},
+                {icon: "🎂", word: "Make a Cake", def: "To bake a sweet dessert.", ex: "I made a chocolate cake.", q: "What is your favorite cake?", starter: "My favorite is..."},
+                {icon: "🏊", word: "Swimming Pool", def: "A place filled with water for swimming.", ex: "I went to the swimming pool.", q: "Can you swim well?", starter: "Yes, I can... / No, I can't."}
+            ]),
+
+            bVideo("Watch & Listen", "kTf0V4HyFtM", "Listen to Tim, Buli, Sian, and Georgie talk about the weekend. Who made a chocolate cake?", 0, 138),
+
+            bMCQ("c1", "Memory Check", "Who made a chocolate cake for the family?", [
+                "Tim", 
+                "Sian", 
+                "Georgie"
+            ], 1, "Do you like cooking or making cakes?", "Yes, I like cooking... / No, I don't."),
+
+            // PHASE 2: TO BE
+            bGrammar("The Verb To Be (Past)", "When we talk about our [feelings, locations, or states] in the past (like yesterday or last weekend), the verbs [IS] and [AM] become [WAS].", [
+                {text: "Present: The weekend [is] fun.", context: "Now"},
+                {text: "Past: The weekend [was] fun.", context: "Yesterday"}
+            ], "var(--accent-orange)"),
+
+            bFixer("Fix the memory", [
+                "Hi! My weekend [is] great.",
+                "The beach [is] very hot on Saturday.",
+                "The chocolate cake [is] delicious."
+            ], ["was", "was", "was"]),
+
+            // PHASE 3: VERBS & DID
+            bGrammar("Irregular Action Verbs", "Most verbs in English take '-ed' in the past (Play -> Played). But some are rebellious and change completely! We call them [Irregular Verbs]. You just have to memorize them.", [
+                {text: "Go ➡️ [Went]", context: "I went to the beach."},
+                {text: "Eat ➡️ [Ate]", context: "We ate pasta."},
+                {text: "Make ➡️ [Made]", context: "I made a cake."}
+            ], "var(--accent-orange)"),
+
+            bMatchMaker("Match the Verbs", [
+                {left: "Go", right: "Went"},
+                {left: "Eat", right: "Ate"},
+                {left: "Make", right: "Made"},
+                {left: "Read", right: "Read (red)"}
+            ]),
+            
+            bPhotoCaption("p1", "Caption the Photo", "🍕", "Yesterday, we ______ pizza.", ["eat", "ate", "eated"], 1),
+
+            bGrammar("The Magic Word (Questions)", "To ask a question in the past, we use the magic helper word [DID]. Because 'Did' already shows it's the past, it [protects the main verb]! The main verb can relax and go back to its normal present form.", [
+                {text: "Affirmative: You [went] to the beach.", context: "You did the action."},
+                {text: "Question: [Did] you [go] to the beach?", context: "Notice: 'Went' becomes 'Go' again!"}
+            ], "var(--accent-blue)"),
+
+            bTuner("t1", "The Magic Switch", "Toggle the switch to change the sentence into a question. Watch the verb change!", "You [went] swimming.", "[Did] you [go] swimming?", "Notice how the magic word DID takes the past tense, so 'went' relaxes and goes back to 'go'!"),
+
+            bWordBuilder("wb1", "Ask the question", "Put the words in order to ask a question.", ["What", "did", "you", "do", "?"]),
+
+            // PHASE 4: DIDN'T
+            bGrammar("The Negative Shield (Didn't)", "To say NO in the past, we use [DIDN'T] (which means Did Not). Just like a shield, it protects the main verb. Because 'Didn't' is already in the past, the main verb stays in the base form!", [
+                {text: "Affirmative: I [ate] pasta.", context: "Yes"},
+                {text: "Negative: I [didn't eat] pasta.", context: "No (Ate becomes Eat)"}
+            ], "var(--accent-blue)"),
+
+            bTuner("t2", "The Shield Switch", "Toggle the switch to change the sentence to NEGATIVE. Watch the verb change!", "She [made] a cake.", "She [didn't make] a cake.", "Didn't + Base Verb!"),
+
+            bBamboozle("True or False?", 
+                {text: "In questions, we say: 'Did you [went] to the park?'", isTrue: false}, 
+                {text: "In negatives, we say: 'I [didn't go] to the park.'", isTrue: true}
+            ),
+
+            // PHASE 5: CONSOLIDATION
+            bPolaroids("Useful Words", [
+                {icon: "🤷", word: "What else?", def: "What other things?", ex: "I read a book. What else did you do?", q: "You studied English today. What else did you do?", starter: "I also..."},
+                {icon: "🏠", word: "At home", def: "Inside your house.", ex: "I watched a film at home.", q: "Do you like to stay at home on Sunday?", starter: "Yes, I love it... / No, I prefer to go out."}
+            ]),
+
+            bChat("Text Messages", [
+                {s:'B', t:'Hi Tom! How was your weekend?'},
+                {s:'A', t:'Hi! It was great. I went to the beach on Saturday.'},
+                {s:'B', t:'Nice! Did you go swimming?'},
+                {s:'A', t:'No, I didn\'t swim. It was cold.'},
+                {s:'B', t:'What else did you do?'},
+                {s:'A', t:'I stayed at home on Sunday and read a book.'}
+            ]),
+
+            bMCQ("c2", "Chat Check", "Why didn't Tom swim at the beach?", [
+                "He doesn't like the beach.", 
+                "It was too cold.", 
+                "He didn't have time."
+            ], 1, "Do you like swimming when it's cold?", "No, I don't! / Yes, it's refreshing."),
+
+            bMCQ("c3", "Odd One Out", "If someone asks 'How was your weekend?', which answer is WRONG?", [
+                "It was great!", 
+                "I ate a pizza.", 
+                "It was boring."
+            ], 1, "Remember: 'How was it?' asks for an adjective (great, bad, fun). 'What did you do?' asks for an action!", "Got it!"),
+
+            bWordBuilder("wb2", "Sentence Builder", "Build Tom's sentence.", ["I", "didn't", "go", "swimming", "."]),
+
+            // PHASE 6: SPEAKING
+            bGrammar("Your Speaking Tools", "Use these phrases to talk about your weekend.", [
+                {text: "It [was]...", context: "great / fun / boring"},
+                {text: "I [went] to...", context: "the beach / the cinema / work"},
+                {text: "I [didn't]...", context: "go out / study / cook"},
+                {text: "I [ate]...", context: "pizza / pasta / sushi"}
+            ], "var(--accent-yellow)"),
+
+            bRoleplay("Monday Morning", "Your teacher asks: 'Hi! How was your weekend? What did you do?'", "It was [great/fun/boring]. I went to [place]. I ate [food]. I didn't [action]."),
+
+            bRoleplay("The Movie Star", "Imagine you are a famous movie star. Your teacher is a journalist. Tell them about your glamorous weekend!", "It was amazing. I went to Paris. I ate expensive food. But I didn't sleep much!"),
+
+            bBamboozle("Final Check", 
+                {text: "'What did you do?' is correct.", isTrue: true}, 
+                {text: "'I didn't ate pizza.' is correct.", isTrue: false}
+            ),
+
+            bWrap()
+        ];
+
+        // --- RUNTIME LOGIC ---
+        function toggleElementClass(id, action, className) {
+            const el = document.getElementById(id);
+            if (el) {
+                if (action === 'add') el.classList.add(className);
+                else if (action === 'remove') el.classList.remove(className);
+                else if (action === 'toggle') el.classList.toggle(className);
+            }
+        }
+
+        function startMission() {
+            toggleElementClass('dashboard', 'add', 'hidden'); toggleElementClass('dashboard', 'remove', 'flex');
+            toggleElementClass('hud-top', 'remove', 'hidden'); toggleElementClass('hud-top', 'add', 'flex');
+            toggleElementClass('mission-arena', 'remove', 'hidden'); toggleElementClass('mission-arena', 'add', 'flex');
+            toggleElementClass('nav-console', 'remove', 'hidden'); toggleElementClass('nav-console', 'add', 'flex');
+            buildLessonNavigator(); renderStep();
+        }
+
+        function goHome() {
+            toggleElementClass('dashboard', 'remove', 'hidden'); toggleElementClass('dashboard', 'add', 'flex');
+            toggleElementClass('hud-top', 'add', 'hidden'); toggleElementClass('hud-top', 'remove', 'flex');
+            toggleElementClass('mission-arena', 'add', 'hidden'); toggleElementClass('mission-arena', 'remove', 'flex');
+            toggleElementClass('nav-console', 'add', 'hidden'); toggleElementClass('nav-console', 'remove', 'flex');
+            state.current = 0; updateHUD();
+            document.getElementById('lesson-navigator')?.classList.remove('active');
+            document.getElementById('teacher-hud')?.classList.remove('active');
+            document.getElementById('whiteboard')?.classList.remove('active');
+        }
+
+        function renderStep() {
+            if (!lessonData || !lessonData[state.current]) return;
+            const step = lessonData[state.current];
+            const pTitle = document.getElementById('console-title'); if(pTitle) pTitle.innerText = "A1";
+            const pType = document.getElementById('console-type'); if(pType) pType.innerText = step.type;
+            const sCount = document.getElementById('console-counter'); if(sCount) sCount.innerText = `PHOTO ${String(state.current + 1).padStart(2, '0')}/${lessonData.length}`;
+            const content = document.getElementById('mission-content'); if(content) content.innerHTML = `<div class="w-full max-w-7xl mx-auto">${step.html}</div>`;
+            updateHUD();
+            
+            const navList = document.getElementById('nav-steps-list');
+            if (navList) {
+                Array.from(navList.children).forEach((btn, i) => {
+                    if(i === state.current) { btn.classList.add('bg-[var(--accent-blue)]/10', 'text-[var(--accent-blue)]', 'font-bold', 'border-l-4', 'border-[var(--accent-blue)]'); btn.classList.remove('text-gray-500'); } 
+                    else { btn.classList.remove('bg-[var(--accent-blue)]/10', 'text-[var(--accent-blue)]', 'font-bold', 'border-l-4', 'border-[var(--accent-blue)]'); btn.classList.add('text-gray-500'); }
+                });
+            }
+            if (step.type === TYPES.BUILDER) setTimeout(setupWb, 100);
+        }
+
+        function nextStep() { if (state.current < lessonData.length - 1) { state.current++; renderStep(); } else { goHome(); } }
+        function prevStep() { if (state.current > 0) { state.current--; renderStep(); } }
+        
+        // DRAWERS
+        function toggleLessonNavigator() { document.getElementById('lesson-navigator').classList.toggle('active'); document.getElementById('teacher-hud')?.classList.remove('active'); document.getElementById('whiteboard')?.classList.remove('active');}
+        function toggleTeacherHUD() { document.getElementById('teacher-hud').classList.toggle('active'); document.getElementById('lesson-navigator')?.classList.remove('active'); document.getElementById('whiteboard')?.classList.remove('active');}
+        function toggleWhiteboard() { document.getElementById('whiteboard').classList.toggle('active'); document.getElementById('lesson-navigator')?.classList.remove('active'); document.getElementById('teacher-hud')?.classList.remove('active');}
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) { document.documentElement.requestFullscreen().catch(err => console.log(err)); } 
+            else { if (document.exitFullscreen) document.exitFullscreen(); }
+        }
+
+        function toggleStarter(btn) {
+            const content = btn.nextElementSibling;
+            if (content.classList.contains('open')) { content.classList.remove('open'); } else { content.classList.add('open'); }
+        }
+
+        // --- MINIGAMES ---
+
+        function handleQuizTrial(id, row, isCorrect, followup, starter) {
+            if(row.classList.contains('locked-check')) {
+                const parent = row.parentElement; 
+                Array.from(parent.children).forEach(child => { child.onclick = null; child.classList.add('opacity-40', 'cursor-default'); child.classList.remove('locked-check');});
+                row.classList.remove('opacity-40'); 
+                
+                if(isCorrect) {
+                    row.classList.add('correct'); state.xp += 4; updateHUD(); shootConfetti();
+                    const fBox = document.getElementById(`followup-box-${id}`); if(fBox) fBox.classList.remove('hidden');
+                } else { row.classList.add('wrong'); state.hp -= 10; updateHUD(); }
+            }
+        }
+
+        function handleCaptionTrial(id, btn, isCorrect) {
+            if(btn.parentElement.classList.contains('locked')) return;
+            const parent = btn.parentElement;
+            parent.classList.add('locked');
+            Array.from(parent.children).forEach(c => { c.onclick = null; c.classList.add('opacity-50', 'cursor-default'); });
+            btn.classList.remove('opacity-50');
+            
+            if(isCorrect) {
+                btn.classList.add('bg-[var(--accent-orange)]', 'text-white', 'border-[var(--accent-orange)]');
+                btn.style.color = "white";
+                btn.style.background = "var(--accent-orange)";
+                state.xp += 2; updateHUD(); shootConfetti();
+                document.getElementById(`fb-photo-${id}`).classList.remove('hidden');
+            } else {
+                btn.classList.add('shake', 'border-[var(--hp-red)]');
+                state.hp -= 10; updateHUD();
+            }
+        }
+
+        function toggleTuner(id, checkbox, textAff, textAlt, feedback, tagColor) {
+            const textEl = document.getElementById(`tuner-text-${id}`);
+            const aff = document.getElementById(`mode-aff-${id}`);
+            const alt = document.getElementById(`mode-alt-${id}`);
+            textEl.style.opacity = 0;
+            setTimeout(() => {
+                if(checkbox.checked) {
+                    aff.classList.replace('text-[var(--text-dark)]', 'text-gray-400'); alt.classList.replace('text-gray-400', 'text-[var(--accent-blue)]');
+                    textEl.innerHTML = textAlt.replace(/\[(.*?)\]/g, `<span style="color: ${tagColor}">$1</span>`); 
+                    document.getElementById(`tuner-fb-${id}`).classList.remove('hidden');
+                } else {
+                    aff.classList.replace('text-gray-400', 'text-[var(--text-dark)]'); alt.classList.replace('text-[var(--accent-blue)]', 'text-gray-400');
+                    textEl.innerHTML = textAff.replace(/\[(.*?)\]/g, `<span style="color: ${tagColor}">$1</span>`); 
+                    document.getElementById(`tuner-fb-${id}`).classList.add('hidden');
+                }
+                textEl.style.opacity = 1;
+            }, 200);
+        }
+
+        let activeBug = null; let expectedFix = "";
+        function triggerFixer(el, answer) {
+            if(el.classList.contains('bug-fixed')) return;
+            activeBug = el; expectedFix = answer;
+            const panel = document.getElementById('fix-panel'); panel.classList.remove('translate-y-full');
+            document.getElementById('fix-input').value = ''; document.getElementById('fix-input').focus();
+        }
+        function submitFixer() {
+            const input = document.getElementById('fix-input').value.trim().toLowerCase();
+            const panel = document.getElementById('fix-panel');
+            if(input === expectedFix.toLowerCase()) {
+                activeBug.innerText = expectedFix; activeBug.classList.remove('bug-word'); activeBug.classList.add('bug-fixed');
+                panel.classList.add('translate-y-full');
+                const container = activeBug.closest('.polaroid-card');
+                const remaining = container.querySelectorAll('.bug-word').length;
+                if(remaining === 0) { shootConfetti(); state.xp += 5; updateHUD(); document.getElementById('fixer-hub').classList.remove('hidden');}
+            } else {
+                const inputEl = document.getElementById('fix-input'); inputEl.classList.add('shake', 'border-[var(--accent-orange)]');
+                state.hp -= 10; updateHUD();
+                setTimeout(() => inputEl.classList.remove('shake', 'border-[var(--accent-orange)]'), 400);
+            }
+        }
+        document.getElementById('fix-input')?.addEventListener('keypress', (e) => { if (e.key === 'Enter') submitFixer(); });
+
+        let activeMatch = null; let matchesMatched = 0;
+        function handleMatch(node) {
+            if (node.classList.contains('matched')) return;
+            if (!activeMatch) {
+                activeMatch = node; node.classList.add('active');
+            } else {
+                if (activeMatch.dataset.type !== node.dataset.type && activeMatch.dataset.id === node.dataset.id) {
+                    activeMatch.classList.replace('active', 'matched'); node.classList.add('matched');
+                    activeMatch = null; matchesMatched++; state.xp += 2; updateHUD();
+                    const totalPairs = document.getElementById('match-board').children[0].children.length;
+                    if(matchesMatched === totalPairs) { document.getElementById('match-hub').classList.remove('hidden'); shootConfetti(); matchesMatched = 0; }
+                } else {
+                    activeMatch.classList.remove('active'); activeMatch.classList.add('shake', 'border-[var(--accent-orange)]', 'text-[var(--accent-orange)]'); node.classList.add('shake', 'border-[var(--accent-orange)]', 'text-[var(--accent-orange)]');
+                    state.hp -= 10; updateHUD();
+                    setTimeout(() => { activeMatch.classList.remove('shake', 'border-[var(--accent-orange)]', 'text-[var(--accent-orange)]'); node.classList.remove('shake', 'border-[var(--accent-orange)]', 'text-[var(--accent-orange)]'); activeMatch = null; }, 400);
+                }
+            }
+        }
+
+        let wbState = {};
+        function setupWb() {
+            document.querySelectorAll('[id^="wb-data-"]').forEach(el => {
+                const id = el.id.replace('wb-data-', '');
+                const expectedData = el.getAttribute('data-expected');
+                wbState[id] = { current: [], expected: JSON.parse(expectedData) };
+            });
+        }
+        function moveWbWord(pill, word, id) {
+            if(pill.classList.contains('used')) return;
+            if(!wbState[id]) return;
+            wbState[id].current.push(word); pill.classList.add('used');
+            const dz = document.getElementById(`wb-dropzone-${id}`);
+            const newPill = document.createElement('span'); newPill.className = 'pill-in-zone'; newPill.innerText = word; dz.appendChild(newPill);
+            if(wbState[id].current.length === wbState[id].expected.length) {
+                let win = wbState[id].current.every((val, index) => val === wbState[id].expected[index]);
+                if(win) { document.getElementById(`wb-fb-${id}`).classList.remove('hidden'); updateHUD(); shootConfetti(); }
+                else { dz.classList.add('shake', 'border-[var(--accent-orange)]'); setTimeout(() => dz.classList.remove('shake', 'border-[var(--accent-orange)]'), 400); }
+            }
+        }
+        function resetWb(id) {
+            if(!wbState[id]) return;
+            wbState[id].current = []; document.getElementById(`wb-dropzone-${id}`).innerHTML = ''; document.getElementById(`wb-fb-${id}`).classList.add('hidden');
+            document.getElementById(`wb-bank-${id}`).querySelectorAll('.wb-pill').forEach(p => p.classList.remove('used'));
+        }
+
+        function checkBamb(q, isCorrect) {
+            const container = document.getElementById(`bamb-q${q}`);
+            if(isCorrect) {
+                container.classList.add('hidden');
+                if(q === 1) document.getElementById('bamb-q2').classList.remove('hidden');
+                else { document.getElementById('bamb-fb').classList.remove('hidden'); shootConfetti(); }
+            } else {
+                container.classList.add('shake', 'border-4', 'border-[var(--accent-orange)]');
+                setTimeout(() => container.classList.remove('shake', 'border-4', 'border-[var(--accent-orange)]'), 400);
+            }
+        }
+
+        function shuffleArray(array) {
+            let curId = array.length;
+            while (0 !== curId) {
+                let randId = Math.floor(Math.random() * curId); curId -= 1;
+                let tmp = array[curId]; array[curId] = array[randId]; array[randId] = tmp;
+            }
+            return array;
+        }
+
+        function buildLessonNavigator() {
+            const list = document.getElementById('nav-steps-list'); if (!list) return;
+            list.innerHTML = '';
+            lessonData.forEach((step, i) => {
+                const btn = document.createElement('button');
+                btn.className = `w-full text-left p-3 rounded-xl flex items-center gap-3 transition-all font-title ${i === state.current ? 'bg-[var(--accent-blue)]/10 text-[var(--accent-blue)] font-bold border-l-4 border-[var(--accent-blue)]' : 'text-gray-500 hover:bg-gray-50'}`;
+                btn.innerHTML = `<span class="text-[10px] w-4 opacity-50 font-bold">${i+1}</span><div class="flex flex-col truncate"><span class="text-sm truncate">${step.title}</span></div>`;
+                btn.onclick = () => { state.current = i; renderStep(); toggleLessonNavigator(); };
+                list.appendChild(btn);
+            });
+        }
+
+        function triggerPraise(main, sub) {
+            document.getElementById('teacher-hud')?.classList.remove('active'); 
+            const overlay = document.getElementById('praise-overlay'); const card = document.getElementById('praise-card');
+            
+            if(main === 'NICE!') {
+                card.className = "polaroid-card p-16 rounded-[2rem] text-center transform scale-50 transition-transform duration-500 border-b-8 border-[var(--accent-blue)]";
+                document.getElementById('praise-main').className = "font-title text-5xl md:text-7xl font-black tracking-tighter uppercase mb-4 text-[var(--accent-blue)] drop-shadow-sm";
+            } else {
+                card.className = "polaroid-card p-16 rounded-[2rem] text-center transform scale-50 transition-transform duration-500 border-b-8 border-[var(--accent-orange)]";
+                document.getElementById('praise-main').className = "font-title text-5xl md:text-7xl font-black tracking-tighter uppercase mb-4 text-[var(--accent-orange)] drop-shadow-sm";
+            }
+            
+            document.getElementById('praise-main').innerText = main; document.getElementById('praise-sub').innerText = sub;
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            setTimeout(() => card.classList.replace('scale-50', 'scale-100'), 50); shootConfetti();
+            setTimeout(() => { card.classList.replace('scale-100', 'scale-50'); overlay.classList.add('opacity-0', 'pointer-events-none'); }, 2500);
+        }
+
+        function shootConfetti() {
+            const cCanvas = document.getElementById('confetti-canvas'); const cCtx = cCanvas.getContext('2d');
+            cCanvas.width = window.innerWidth; cCanvas.height = window.innerHeight;
+            const pieces = []; const colors = ['#FF5A5F', '#087E8B', '#F7C548'];
+            for(let i=0; i<60; i++) pieces.push({ x: cCanvas.width/2, y: cCanvas.height/2+100, vx: (Math.random()-0.5)*20, vy: (Math.random()-1)*20-5, size: Math.random()*12+6, color: colors[Math.floor(Math.random()*colors.length)], rot: Math.random()*360, rotSpeed: (Math.random()-0.5)*10 });
+            let animationId;
+            function animateC() {
+                cCtx.clearRect(0, 0, cCanvas.width, cCanvas.height); let active = false;
+                pieces.forEach(p => {
+                    p.x += p.vx; p.y += p.vy; p.vy += 0.5; p.rot += p.rotSpeed; if(p.y < cCanvas.height) active = true;
+                    cCtx.save(); cCtx.translate(p.x, p.y); cCtx.rotate(p.rot*Math.PI/180); cCtx.fillStyle = p.color; 
+                    // Round confetti
+                    cCtx.beginPath(); cCtx.arc(0, 0, p.size/2, 0, Math.PI*2); cCtx.fill(); cCtx.restore();
+                });
+                if(active) animationId = requestAnimationFrame(animateC); else cCtx.clearRect(0, 0, cCanvas.width, cCanvas.height);
+            }
+            animateC();
+        }
+        
+        window.onload = () => { updateHUD(); buildLessonNavigator(); goHome(); };
+    </script>
+</body>
+</html>
